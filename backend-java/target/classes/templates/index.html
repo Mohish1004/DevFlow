@@ -10,6 +10,9 @@
     <div class="relative overflow-hidden purple-noise text-white">
         <div class="absolute inset-0 purple-grid opacity-30"></div>
         
+        <!-- 3D Hero Visual Element -->
+        <div id="hero-3d-container" class="absolute right-[-5%] top-[10%] w-[600px] h-[600px] pointer-events-none z-10 hidden lg:block opacity-70"></div>
+        
         <!-- Hero Section -->
         <section class="relative overflow-hidden pb-12 pt-32 sm:pt-36 lg:pt-40">
             <div class="absolute right-[-8rem] top-[-6rem] h-[34rem] w-[34rem] rounded-full bg-black/40 blur-3xl"></div>
@@ -631,5 +634,131 @@
         <footer th:replace="~{fragments/footer :: footer}"></footer>
     </div>
 
+    <!-- ThreeJS 3D Render Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('hero-3d-container');
+            if (!container) return;
+
+            // Scene setup
+            const scene = new THREE.Scene();
+
+            // Camera setup
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+            camera.position.z = 8;
+
+            // Renderer setup
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+            scene.add(ambientLight);
+
+            const purpleLight = new THREE.PointLight(0xa764ff, 8, 15);
+            purpleLight.position.set(2, 3, 4);
+            scene.add(purpleLight);
+
+            const blueLight = new THREE.PointLight(0x00d8ff, 6, 15);
+            blueLight.position.set(-3, -2, 3);
+            scene.add(blueLight);
+
+            // Geometry - Torus Knot representing "Flow"
+            const knotGeo = new THREE.TorusKnotGeometry(1.2, 0.38, 150, 20);
+            const knotMat = new THREE.MeshPhysicalMaterial({
+                color: 0x8b7be8,
+                roughness: 0.1,
+                metalness: 0.15,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
+                transmission: 0.7, // High transparency / glass effect
+                thickness: 1.5,
+                ior: 1.5,
+                flatShading: false
+            });
+            const mainMesh = new THREE.Mesh(knotGeo, knotMat);
+            scene.add(mainMesh);
+
+            // Orbiting spheres representing task nodes in flow
+            const sphereGeo = new THREE.SphereGeometry(0.18, 32, 32);
+            const sphereMat = new THREE.MeshPhysicalMaterial({
+                color: 0x00d8ff,
+                roughness: 0.1,
+                metalness: 0.8,
+                clearcoat: 1.0
+            });
+
+            const particles = [];
+            const particleCount = 3;
+            for (let i = 0; i < particleCount; i++) {
+                const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+                scene.add(sphere);
+                particles.push({
+                    mesh: sphere,
+                    angle: (i / particleCount) * Math.PI * 2,
+                    speed: 0.012 + i * 0.004,
+                    radius: 2.3 + i * 0.2,
+                    yOffset: (Math.random() - 0.5) * 1.5
+                });
+            }
+
+            // Mouse interaction for parallax
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            window.addEventListener('mousemove', (e) => {
+                mouseX = (e.clientX / window.innerWidth - 0.5) * 1.5;
+                mouseY = (e.clientY / window.innerHeight - 0.5) * 1.5;
+            });
+
+            // Animation loop
+            let clock = new THREE.Clock();
+            const tick = () => {
+                const elapsedTime = clock.getElapsedTime();
+
+                // Rotate main shape
+                mainMesh.rotation.x = elapsedTime * 0.12;
+                mainMesh.rotation.y = elapsedTime * 0.18;
+
+                // Orbiting particles
+                particles.forEach(p => {
+                    p.angle += p.speed;
+                    p.mesh.position.x = Math.cos(p.angle) * p.radius;
+                    p.mesh.position.z = Math.sin(p.angle) * p.radius;
+                    p.mesh.position.y = p.yOffset + Math.sin(elapsedTime * 1.2 + p.angle) * 0.4;
+                    p.mesh.rotation.y = elapsedTime;
+                });
+
+                // Smooth mouse parallax
+                targetX += (mouseX - targetX) * 0.05;
+                targetY += (mouseY - targetY) * 0.05;
+
+                mainMesh.position.x = targetX * 1.2;
+                mainMesh.position.y = -targetY * 1.2 + Math.sin(elapsedTime * 1.2) * 0.15; // float animation
+
+                // Render
+                renderer.render(scene, camera);
+                window.requestAnimationFrame(tick);
+            };
+
+            tick();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                if (!container.clientWidth || !container.clientHeight) return;
+                const newWidth = container.clientWidth;
+                const newHeight = container.clientHeight;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            });
+        });
+    </script>
 </body>
 </html>
