@@ -24,12 +24,9 @@ yarn-error.log*
 # Vercel
 .vercel
 
-# Temporary/system files and page builders
-.dev-server*
-.start-server*
-.preview*
+# Temporary/system files, logs, and page builders
+content/
 .tmp-video-frames/
 .video-frames/
-preview*.png
 frontend/DevFlow.html
 frontend/DevFlow_files/
