@@ -1,41 +1,35 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Dependencies
+node_modules/
+dist/
+build/
 
-# testing
-/coverage
+# Next.js
+frontend/.next/
+frontend/out/
 
-# next.js
-/.next/
-/out/
+# TypeScript
+*.tsbuildinfo
+frontend/next-env.d.ts
 
-# production
-/build
-
-# debug
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
+# Local env files
 .env*.local
 
-# vercel
+# Vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# system / logs / temporary files
-*.log
+# Temporary/system files and page builders
 .dev-server*
 .start-server*
 .preview*
 .tmp-video-frames/
 .video-frames/
 preview*.png
-/PeachWeb.html
-/PeachWeb_files/
+frontend/DevFlow.html
+frontend/DevFlow_files/
