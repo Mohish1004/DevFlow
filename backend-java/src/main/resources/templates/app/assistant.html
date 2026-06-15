@@ -14,28 +14,27 @@
                     'Draft a review checklist for the auth feature',
                     'Turn release blockers into action items'
                 ],
-                demoResponses: {
-                    default: 'Demo mode: I can summarize visible mock workspace data and suggest next steps, but I do not have real backend retrieval or live repository context yet.',
-                    release: 'Demo mode: release risk is concentrated around auth verification, persistent task state, and honest integration status messaging.',
-                    review: 'Demo mode: a strong review checklist should confirm GitHub link validity, status transitions, required comments, and explicit approve/changes-required outcomes.'
-                },
                 async askAssistant() {
                     if (!this.prompt.trim()) return;
                     this.loading = true;
                     this.response = '';
-                    
-                    // Simulate latency
-                    await new Promise(resolve => setTimeout(resolve, 800));
-                    
-                    const lower = this.prompt.toLowerCase();
-                    if (lower.includes('release') || lower.includes('risk') || lower.includes('blocker')) {
-                        this.response = this.demoResponses.release;
-                    } else if (lower.includes('review') || lower.includes('auth') || lower.includes('checklist')) {
-                        this.response = this.demoResponses.review;
-                    } else {
-                        this.response = this.demoResponses.default;
+                    try {
+                        let res = await fetch('/api/assistant', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ prompt: this.prompt })
+                        });
+                        if (res.ok) {
+                            let data = await res.json();
+                            this.response = data.reply;
+                        } else {
+                            this.response = 'Failed to communicate with AI Assistant.';
+                        }
+                    } catch(e) {
+                        this.response = 'Network error contacting AI Assistant.';
+                    } finally {
+                        this.loading = false;
                     }
-                    this.loading = false;
                 }
              }"
              class="space-y-6">
@@ -45,7 +44,7 @@
                 <span class="eyebrow border-white/10 bg-white/5 text-white/70">Assistant</span>
                 <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Ask the workspace assistant</h1>
                 <p class="workspace-muted text-sm max-w-3xl leading-7">
-                    Assistant replies are clearly labeled demo until backend retrieval and a real LLM provider are connected.
+                    Assistant is powered by the Google Gemini API to provide smart insights and code analysis.
                 </p>
             </div>
 
@@ -54,7 +53,7 @@
                 
                 <!-- Left: Form -->
                 <form class="workspace-card rounded-[1.75rem] p-6 h-fit" @submit.prevent="askAssistant()">
-                    <p class="text-xl font-semibold tracking-[-0.04em] text-white">Suggested prompts</p>
+                     <p class="text-xl font-semibold tracking-[-0.04em] text-white">Suggested prompts</p>
                     <div class="mt-5 flex flex-wrap gap-2">
                         <template x-for="p in prompts" :key="p">
                             <button class="rounded-full border border-white/10 px-3 py-2 text-xs text-white/80 hover:bg-white/5 transition"
@@ -82,8 +81,8 @@
                             <span class="text-xl">✨</span>
                             <p class="text-xl font-semibold tracking-[-0.04em] text-white">Assistant reply</p>
                         </div>
-                        <div class="workspace-demo-badge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em]">
-                            Demo AI
+                        <div class="workspace-demo-badge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            Gemini AI
                         </div>
                     </div>
                     
@@ -106,7 +105,7 @@
                         </div>
                         <h3 class="mt-4 text-lg font-semibold text-white">No assistant response yet</h3>
                         <p class="workspace-muted mt-2 text-sm max-w-sm mx-auto leading-6">
-                            Responses must show loading, empty, and demo labeling until a real backend assistant endpoint exists.
+                            Assistant is connected to Gemini 1.5 Flash. Ask anything about your sprint, tasks, or code structure.
                         </p>
                     </div>
                 </div>
