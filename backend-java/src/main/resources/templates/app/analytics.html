@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Analytics')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Analytics', '/app/analytics', ~{::#analytics-content})}">
+        <div id="analytics-content" class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Analytics</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Workspace analytics with honest demo labeling</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Analytics must stay clearly demo-labeled until real backend signals are connected. Fake performance data should never be mistaken for live telemetry.
+                </p>
+            </div>
+
+            <!-- Chart Card -->
+            <div class="workspace-card rounded-[1.75rem] p-6">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-xl">📈</span>
+                    <p class="text-xl font-semibold tracking-[-0.04em] text-white">Velocity trend</p>
+                </div>
+                
+                <!-- Chart.js Container -->
+                <div class="relative w-full h-72">
+                    <canvas id="velocityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.02] p-8 text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/60">
+                    📊
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-white">No live benchmark comparisons yet</h3>
+                <p class="workspace-muted mt-2 text-sm max-w-sm mx-auto leading-6">
+                    No backend-derived trend comparisons are available yet. Once the Java API is live, these charts should bind to real team data.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Chart rendering logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('velocityChart').getContext('2d');
+            
+            // Get colors from CSS Variables
+            const style = getComputedStyle(document.documentElement);
+            const graphColor = style.getPropertyValue('--workspace-graph').trim() || '#8b7be8';
+            const inkColor = style.getPropertyValue('--workspace-ink').trim() || 'rgba(255, 255, 255, 0.6)';
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Velocity',
+                        data: [12, 18, 17, 23, 28, 27, 31],
+                        borderColor: graphColor,
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: inkColor }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            ticks: { color: inkColor }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

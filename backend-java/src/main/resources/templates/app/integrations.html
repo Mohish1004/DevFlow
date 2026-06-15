@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Integrations')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Integrations', '/app/integrations', ~{::#integrations-content})}">
+        <div id="integrations-content" class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Integrations</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Integration surface with honest states</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Integration states must be honest: connected, not connected, requires backend, error, or UI preview. GitHub is prioritized because Review Zone depends on it.
+                </p>
+            </div>
+
+            <!-- Integrations Grid -->
+            <div class="grid gap-4 xl:grid-cols-2">
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🔌</span>
+                        <p class="text-2xl font-semibold tracking-[-0.04em] text-white">GitHub</p>
+                    </div>
+                    <p class="workspace-muted mt-3 text-sm leading-7">Required for Review Zone repo, PR, and commit linking.</p>
+                    <div class="mt-5 inline-flex rounded-full border border-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">
+                        Requires Backend
+                    </div>
+                </div>
+                
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🔌</span>
+                        <p class="text-2xl font-semibold tracking-[-0.04em] text-white">Google Meet</p>
+                    </div>
+                    <p class="workspace-muted mt-3 text-sm leading-7">Manual Meet links can work before Calendar automation.</p>
+                    <div class="mt-5 inline-flex rounded-full border border-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">
+                        UI Preview
+                    </div>
+                </div>
+
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🔌</span>
+                        <p class="text-2xl font-semibold tracking-[-0.04em] text-white">Google Calendar</p>
+                    </div>
+                    <p class="workspace-muted mt-3 text-sm leading-7">Calendar-backed scheduling comes after backend OAuth is connected.</p>
+                    <div class="mt-5 inline-flex rounded-full border border-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">
+                        Requires Backend
+                    </div>
+                </div>
+
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🔌</span>
+                        <p class="text-2xl font-semibold tracking-[-0.04em] text-white">Google Drive</p>
+                    </div>
+                    <p class="workspace-muted mt-3 text-sm leading-7">Attach workspace resources once storage and OAuth are wired.</p>
+                    <div class="mt-5 inline-flex rounded-full border border-white/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">
+                        Not Connected
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.02] p-8 text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/60">
+                    🔌
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-white">No live integrations connected</h3>
+                <p class="workspace-muted mt-2 text-sm max-w-sm mx-auto leading-6">
+                    No integrations are truly connected in demo mode. Backend OAuth and token storage are still required.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

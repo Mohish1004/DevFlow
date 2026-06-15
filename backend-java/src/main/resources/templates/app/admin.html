@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Admin')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Admin', '/app/admin', ~{::#admin-content})}">
+        <div id="admin-content" 
+             x-data="{
+                copied: false,
+                joinLink: '[[${currentUser != null ? currentUser.joinLink : 'http://localhost:8080/join/DEV-DEMO'}]]',
+                async copyJoinLink() {
+                    try {
+                        await navigator.clipboard.writeText(this.joinLink);
+                        this.copied = true;
+                        setTimeout(() => this.copied = false, 2000);
+                    } catch(e) {
+                        console.error('Failed to copy join link', e);
+                    }
+                }
+             }"
+             class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Admin</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Team onboarding and access</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Admin needs honest team-code handling, join-link sharing, and access visibility. Permanent team identity is managed via H2.
+                </p>
+            </div>
+
+            <!-- Double column layout -->
+            <div class="grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
+                <!-- Team code card -->
+                <div class="workspace-card rounded-[1.75rem] p-6 h-fit">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🛡️</span>
+                        <p class="text-xl font-semibold tracking-[-0.04em] text-white">Team code</p>
+                    </div>
+                    
+                    <div class="mt-5 rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
+                        <p class="workspace-muted text-xs uppercase tracking-[0.24em]">Database-generated</p>
+                        <p class="mt-3 text-4xl font-semibold tracking-[0.14em] text-white" 
+                           th:text="${currentUser != null ? currentUser.teamCode : 'DEV-DEMO'}">DEV-DEMO</p>
+                        <p class="workspace-muted mt-3 text-sm leading-7">
+                            Use this team code to invite new members to join your current workspace.
+                        </p>
+                    </div>
+                    
+                    <button class="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-100 transition duration-300 hover:scale-[1.01]"
+                            @click="await copyJoinLink()"
+                            type="button">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span x-text="copied ? 'Join link copied!' : 'Copy join link'">Copy join link</span>
+                    </button>
+                </div>
+
+                <!-- Roles & Approvals column -->
+                <div class="grid gap-4">
+                    <div class="workspace-card rounded-[1.75rem] p-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">👥</span>
+                            <p class="text-xl font-semibold tracking-[-0.04em] text-white">Access roles</p>
+                        </div>
+                        <div class="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">Organization Admin</div>
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">Team Leader</div>
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">Team Member</div>
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">Reviewer</div>
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">Viewer</div>
+                        </div>
+                    </div>
+                    
+                    <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.02] p-8 text-center">
+                        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/60">
+                            ✓
+                        </div>
+                        <h3 class="mt-4 text-lg font-semibold text-white">No pending approvals yet</h3>
+                        <p class="workspace-muted mt-2 text-sm max-w-sm mx-auto leading-6">
+                            Pending member approvals should surface here once backend membership rules are connected.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

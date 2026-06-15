@@ -30,3 +30,20 @@ content/
 .video-frames/
 frontend/DevFlow.html
 frontend/DevFlow_files/
+
+# Java / Maven
+backend-java/target/
+**/target/
+*.class
+
+# H2 Database files
+*devflow-db*
+*.db
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.factorypath

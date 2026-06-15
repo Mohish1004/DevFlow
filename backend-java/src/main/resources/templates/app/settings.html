@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Settings')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Settings', '/app/settings', ~{::#settings-content})}">
+        <div id="settings-content" class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Settings</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Workspace settings and environment state</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Settings covers auth state, appearance access, and environment honesty. Production should never hide missing configuration.
+                </p>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="grid gap-4 xl:grid-cols-2">
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">⚙️</span>
+                        <p class="text-xl font-semibold tracking-[-0.04em] text-white">Current auth mode</p>
+                    </div>
+                    <p class="workspace-muted mt-4 text-sm leading-7">
+                        Database-backed Spring Security is active. Session-based authentication handles secure requests honestly.
+                    </p>
+                    <a class="mt-5 inline-flex rounded-full border border-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/5 transition"
+                       href="/app/appearance">
+                        Open appearance controls
+                    </a>
+                </div>
+                
+                <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.02] p-8 text-center">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/60">
+                        🔒
+                    </div>
+                    <h3 class="mt-4 text-lg font-semibold text-white">No server settings exposed</h3>
+                    <p class="workspace-muted mt-2 text-sm max-w-sm mx-auto leading-6">
+                        No backend-only settings have been exposed here yet. Secrets, service credentials, and provider wiring must remain server-side.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

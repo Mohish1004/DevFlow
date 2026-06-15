@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Meet')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Meet', '/app/meet', ~{::#meet-content})}">
+        <div id="meet-content" class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Meet</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Meetings tied to project context</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Manual Google Meet links are allowed now, but scheduling and Calendar sync must stay labeled as backend-dependent.
+                </p>
+            </div>
+
+            <!-- Meetings Cards Grid -->
+            <div class="grid gap-4 xl:grid-cols-2">
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">📹</span>
+                        <p class="text-2xl font-semibold tracking-[-0.04em] text-white">Sprint Review</p>
+                    </div>
+                    <div class="mt-4 inline-flex items-center gap-2 text-sm text-white/75">
+                        <span class="text-xs">📅</span>
+                        Today · 5:30 PM
+                    </div>
+                    <br>
+                    <a class="mt-5 inline-flex rounded-full border border-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/5 transition"
+                       href="https://meet.google.com/demo-sprint-review" target="_blank">
+                        Open manual Meet link ↗
+                    </a>
+                </div>
+                
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">📹</span>
+                        <p class="text-2xl font-semibold tracking-[-0.04em] text-white">Architecture Sync</p>
+                    </div>
+                    <div class="mt-4 inline-flex items-center gap-2 text-sm text-white/75">
+                        <span class="text-xs">📅</span>
+                        Tomorrow · 11:00 AM
+                    </div>
+                    <br>
+                    <a class="mt-5 inline-flex rounded-full border border-white/10 px-4 py-3 text-sm font-semibold text-white hover:bg-white/5 transition"
+                       href="https://meet.google.com/demo-architecture-sync" target="_blank">
+                        Open manual Meet link ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="rounded-[1.75rem] border border-white/10 bg-white/[0.02] p-8 text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-white/60">
+                    🗓
+                </div>
+                <h3 class="mt-4 text-lg font-semibold text-white">No auto-scheduled meetings yet</h3>
+                <p class="workspace-muted mt-2 text-sm max-w-sm mx-auto leading-6">
+                    No Calendar-backed automation is connected yet. When backend OAuth exists, scheduled meeting creation should surface here.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

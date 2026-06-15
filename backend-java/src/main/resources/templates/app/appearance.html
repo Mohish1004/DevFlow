@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Appearance')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Appearance', '/app/appearance', ~{::#appearance-content})}">
+        <div id="appearance-content" 
+             x-data="{
+                themeMode: '[[${preferences != null ? preferences.themeMode : 'dark'}]]',
+                fontStyle: '[[${preferences != null ? preferences.fontStyle : 'dm-sans'}]]',
+                accentColor: '[[${preferences != null ? preferences.accentColor : '#a764ff'}]]',
+                borderGlow: [[${preferences != null ? preferences.borderGlow : true}]],
+                cardColor: '[[${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}]]',
+                glassIntensity: [[${preferences != null ? preferences.glassIntensity : 20}]],
+                graphColor: '[[${preferences != null ? preferences.graphColor : '#8b7be8'}]]',
+                textColor: '[[${preferences != null ? preferences.textColor : '#f5f5f6'}]]',
+                
+                saveMessage: '',
+                saveError: '',
+                loading: false,
+
+                updateStyles() {
+                    document.documentElement.setAttribute('data-devflow-theme', this.themeMode);
+                    document.documentElement.style.setProperty('--workspace-accent', this.accentColor);
+                    document.documentElement.style.setProperty('--workspace-graph', this.graphColor);
+                    document.documentElement.style.setProperty('--workspace-glow', this.borderGlow ? '0 0 40px ' + this.accentColor + '26' : 'none');
+                    document.documentElement.style.setProperty('--workspace-card', this.cardColor);
+                    document.documentElement.style.setProperty('--workspace-glass-blur', this.glassIntensity + 'px');
+                    document.documentElement.style.setProperty('--workspace-ink', this.textColor);
+                    document.documentElement.style.fontFamily = this.fontStyle === 'mono' ? 'JetBrains Mono, monospace' : this.fontStyle === 'system' ? 'system-ui, sans-serif' : 'DM Sans, sans-serif';
+                },
+
+                async savePreferences() {
+                    this.loading = true;
+                    this.saveMessage = '';
+                    this.saveError = '';
+                    try {
+                        let res = await fetch('/api/preferences', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                themeMode: this.themeMode,
+                                fontStyle: this.fontStyle,
+                                accentColor: this.accentColor,
+                                borderGlow: this.borderGlow,
+                                cardColor: this.cardColor,
+                                glassIntensity: this.glassIntensity,
+                                graphColor: this.graphColor,
+                                textColor: this.textColor
+                            })
+                        });
+                        if (res.ok) {
+                            this.saveMessage = 'Preferences saved to database!';
+                            setTimeout(() => this.saveMessage = '', 3000);
+                        } else {
+                            this.saveError = 'Failed to save preferences.';
+                        }
+                    } catch(e) {
+                        this.saveError = 'Network error saving preferences.';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                resetDefaults() {
+                    this.themeMode = 'dark';
+                    this.fontStyle = 'dm-sans';
+                    this.accentColor = '#a764ff';
+                    this.borderGlow = true;
+                    this.cardColor = 'rgba(255,255,255,0.06)';
+                    this.glassIntensity = 20;
+                    this.graphColor = '#8b7be8';
+                    this.textColor = '#f5f5f6';
+                    this.updateStyles();
+                    this.savePreferences();
+                }
+             }"
+             x-init="$watch('themeMode', value => updateStyles());
+                     $watch('fontStyle', value => updateStyles());
+                     $watch('accentColor', value => updateStyles());
+                     $watch('borderGlow', value => updateStyles());
+                     $watch('cardColor', value => updateStyles());
+                     $watch('glassIntensity', value => updateStyles());
+                     $watch('graphColor', value => updateStyles());
+                     $watch('textColor', value => updateStyles());"
+             class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Appearance</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Tune theme, glass, and contrast</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Appearance controls persist locally and apply to the workspace shell, cards, graph accents, and font stack. Saved to the database session.
+                </p>
+            </div>
+
+            <!-- Double column layout -->
+            <div class="grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
+                <!-- Form controls -->
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="grid gap-5">
+                        
+                        <!-- Theme Select -->
+                        <label class="grid gap-2 text-white/80 text-sm">
+                            <span>Theme mode</span>
+                            <select x-model="themeMode" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none">
+                                <option value="light" class="bg-zinc-950">light</option>
+                                <option value="minimalist" class="bg-zinc-950">minimalist</option>
+                                <option value="dark" class="bg-zinc-950">dark</option>
+                                <option value="darker" class="bg-zinc-950">darker</option>
+                            </select>
+                        </label>
+                        
+                        <!-- Font Style -->
+                        <label class="grid gap-2 text-white/80 text-sm">
+                            <span>Font style</span>
+                            <select x-model="fontStyle" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none">
+                                <option value="dm-sans" class="bg-zinc-950">dm-sans</option>
+                                <option value="mono" class="bg-zinc-950">mono</option>
+                                <option value="system" class="bg-zinc-950">system</option>
+                            </select>
+                        </label>
+
+                        <!-- Accent Color -->
+                        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                            <span class="text-sm text-white/80">Accent color</span>
+                            <input x-model="accentColor" type="color" class="w-12 h-8 rounded border border-white/10 bg-transparent cursor-pointer" />
+                        </div>
+
+                        <!-- Graph Color -->
+                        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                            <span class="text-sm text-white/80">Graph color</span>
+                            <input x-model="graphColor" type="color" class="w-12 h-8 rounded border border-white/10 bg-transparent cursor-pointer" />
+                        </div>
+
+                        <!-- Text Color -->
+                        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                            <span class="text-sm text-white/80">Text color</span>
+                            <input x-model="textColor" type="color" class="w-12 h-8 rounded border border-white/10 bg-transparent cursor-pointer" />
+                        </div>
+
+                        <!-- Card Color -->
+                        <label class="grid gap-2 text-white/80 text-sm">
+                            <span>Card color</span>
+                            <input x-model="cardColor" type="text" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none" />
+                        </label>
+
+                        <!-- Glass Intensity -->
+                        <label class="grid gap-2 text-white/80 text-sm">
+                            <span x-text="'Glass intensity: ' + glassIntensity + 'px'">Glass intensity: 20px</span>
+                            <input x-model="glassIntensity" type="range" min="8" max="36" class="w-full bg-white/10 accent-white" />
+                        </label>
+
+                        <!-- Border Glow -->
+                        <label class="flex items-center gap-3 text-sm text-white/85 cursor-pointer">
+                            <input x-model="borderGlow" type="checkbox" class="h-4 w-4 rounded border-white/10 bg-black/20 accent-white" />
+                            <span>Border glow</span>
+                        </label>
+
+                        <!-- Save & Reset buttons -->
+                        <div class="flex gap-3 mt-4 pt-4 border-t border-white/5">
+                            <button class="flex-grow inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-100 transition"
+                                    @click="await savePreferences()"
+                                    :disabled="loading"
+                                    type="button">
+                                <span x-text="loading ? 'Saving…' : 'Save changes'">Save changes</span>
+                            </button>
+                            <button class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-3 text-sm text-white hover:bg-white/5 transition"
+                                    @click="resetDefaults()"
+                                    type="button">
+                                ↺ Reset
+                            </button>
+                        </div>
+                        
+                        <div x-show="saveMessage" class="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-xs text-emerald-200" x-text="saveMessage" style="display: none;"></div>
+                        <div x-show="saveError" class="p-3 rounded-xl bg-rose-500/20 border border-rose-500/30 text-xs text-rose-200" x-text="saveError" style="display: none;"></div>
+
+                    </div>
+                </div>
+
+                <!-- Right: Preview card -->
+                <div class="grid gap-4">
+                    <div class="workspace-card rounded-[1.75rem] p-6 h-fit">
+                        <p class="text-xl font-semibold tracking-[-0.04em] text-white mb-4">Live preview</p>
+                        <div class="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
+                            <div class="liquid-glass rounded-[1.25rem] p-4">
+                                <p class="text-sm font-semibold text-white">Preview card</p>
+                                <p class="workspace-muted mt-2 text-sm leading-7">
+                                    Theme, text, glow, card color, and font changes should all be visible here.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rounded-[1.5rem] border border-emerald-300/25 bg-emerald-300/10 p-5 text-sm text-emerald-100">
+                        Contrast looks acceptable for the current combination.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
