@@ -1,6 +1,14 @@
 <!-- fragments/app-shell.html -->
 <div th:fragment="app-shell (title, currentPath, bodyContent)"
-     th:x-data="|{ 
+     th:data-theme-mode="${preferences != null ? preferences.themeMode : 'dark'}"
+     th:data-font-style="${preferences != null ? preferences.fontStyle : 'dm-sans'}"
+     th:data-accent-color="${preferences != null ? preferences.accentColor : '#a764ff'}"
+     th:data-border-glow="${preferences != null ? preferences.borderGlow : true}"
+     th:data-card-color="${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}"
+     th:data-glass-intensity="${preferences != null ? preferences.glassIntensity : 20}"
+     th:data-graph-color="${preferences != null ? preferences.graphColor : '#8b7be8'}"
+     th:data-text-color="${preferences != null ? preferences.textColor : '#f5f5f6'}"
+     x-data="{ 
         menuOpen: false, 
         userMenuOpen: false, 
         commandPaletteOpen: false,
@@ -17,14 +25,14 @@
             this.contextPanelLinks = links;
             this.contextPanelOpen = true;
         },
-        themeMode: '${preferences != null ? preferences.themeMode : 'dark'}',
-        fontStyle: '${preferences != null ? preferences.fontStyle : 'dm-sans'}',
-        accentColor: '${preferences != null ? preferences.accentColor : '#a764ff'}',
-        borderGlow: ${preferences != null ? preferences.borderGlow : true},
-        cardColor: '${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}',
-        glassIntensity: ${preferences != null ? preferences.glassIntensity : 20},
-        graphColor: '${preferences != null ? preferences.graphColor : '#8b7be8'}',
-        textColor: '${preferences != null ? preferences.textColor : '#f5f5f6'}',
+        themeMode: '',
+        fontStyle: '',
+        accentColor: '',
+        borderGlow: true,
+        cardColor: '',
+        glassIntensity: 20,
+        graphColor: '',
+        textColor: '',
         navItems: [
             { href: '/app/dashboard', label: 'Dashboard' },
             { href: '/app/projects', label: 'Projects' },
@@ -39,6 +47,15 @@
             { href: '/app/settings', label: 'Settings' }
         ],
         init() {
+            this.themeMode = this.$el.getAttribute('data-theme-mode');
+            this.fontStyle = this.$el.getAttribute('data-font-style');
+            this.accentColor = this.$el.getAttribute('data-accent-color');
+            this.borderGlow = this.$el.getAttribute('data-border-glow') === 'true';
+            this.cardColor = this.$el.getAttribute('data-card-color');
+            this.glassIntensity = parseInt(this.$el.getAttribute('data-glass-intensity')) || 20;
+            this.graphColor = this.$el.getAttribute('data-graph-color');
+            this.textColor = this.$el.getAttribute('data-text-color');
+
             document.documentElement.setAttribute('data-devflow-theme', this.themeMode);
             document.documentElement.style.setProperty('--workspace-accent', this.accentColor);
             document.documentElement.style.setProperty('--workspace-graph', this.graphColor);
@@ -65,7 +82,7 @@
             if (!this.searchQuery.trim()) return this.navItems;
             return this.navItems.filter(item => item.label.toLowerCase().includes(this.searchQuery.toLowerCase()));
         }
-     }|"
+     }"
      class="workspace-shell workspace-pattern min-h-screen">
     
     <!-- Header -->

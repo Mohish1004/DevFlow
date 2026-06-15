@@ -5,7 +5,8 @@
 
     <div th:replace="~{fragments/app-shell :: app-shell('Review', '/app/review', ~{::#review-content})}">
         <div id="review-content" 
-             th:x-data="|{
+             th:data-current-user-display-name="${currentUser != null ? currentUser.displayName : 'Ava'}"
+             x-data="{
                 reviews: [],
                 newReview: {
                     taskTitle: '',
@@ -35,6 +36,7 @@
                         return;
                     }
                     try {
+                        const displayName = this.$el.getAttribute('data-current-user-display-name') || 'Ava';
                         let res = await fetch('/api/reviews', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -43,7 +45,7 @@
                                 reviewer: this.newReview.reviewer,
                                 githubLink: this.newReview.githubLink,
                                 message: this.newReview.message,
-                                submittedBy: '${currentUser != null ? currentUser.displayName : 'Ava'}',
+                                submittedBy: displayName,
                                 status: 'WAITING_FOR_REVIEW'
                             })
                         });
@@ -69,7 +71,7 @@
                         console.error('Failed to update status', e);
                     }
                 }
-             }|"
+             }"
              x-init="await fetchReviews()"
              class="space-y-6">
             

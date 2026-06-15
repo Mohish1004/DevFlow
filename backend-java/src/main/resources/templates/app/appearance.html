@@ -5,19 +5,40 @@
 
     <div th:replace="~{fragments/app-shell :: app-shell('Appearance', '/app/appearance', ~{::#appearance-content})}">
         <div id="appearance-content" 
-             th:x-data="|{
-                themeMode: '${preferences != null ? preferences.themeMode : 'dark'}',
-                fontStyle: '${preferences != null ? preferences.fontStyle : 'dm-sans'}',
-                accentColor: '${preferences != null ? preferences.accentColor : '#a764ff'}',
-                borderGlow: ${preferences != null ? preferences.borderGlow : true},
-                cardColor: '${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}',
-                glassIntensity: ${preferences != null ? preferences.glassIntensity : 20},
-                graphColor: '${preferences != null ? preferences.graphColor : '#8b7be8'}',
-                textColor: '${preferences != null ? preferences.textColor : '#f5f5f6'}',
+             th:data-theme-mode="${preferences != null ? preferences.themeMode : 'dark'}"
+             th:data-font-style="${preferences != null ? preferences.fontStyle : 'dm-sans'}"
+             th:data-accent-color="${preferences != null ? preferences.accentColor : '#a764ff'}"
+             th:data-border-glow="${preferences != null ? preferences.borderGlow : true}"
+             th:data-card-color="${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}"
+             th:data-glass-intensity="${preferences != null ? preferences.glassIntensity : 20}"
+             th:data-graph-color="${preferences != null ? preferences.graphColor : '#8b7be8'}"
+             th:data-text-color="${preferences != null ? preferences.textColor : '#f5f5f6'}"
+             x-data="{
+                themeMode: 'dark',
+                fontStyle: 'dm-sans',
+                accentColor: '#a764ff',
+                borderGlow: true,
+                cardColor: 'rgba(255,255,255,0.06)',
+                glassIntensity: 20,
+                graphColor: '#8b7be8',
+                textColor: '#f5f5f6',
                 
                 saveMessage: '',
                 saveError: '',
                 loading: false,
+
+                init() {
+                    this.themeMode = this.$el.getAttribute('data-theme-mode') || 'dark';
+                    this.fontStyle = this.$el.getAttribute('data-font-style') || 'dm-sans';
+                    this.accentColor = this.$el.getAttribute('data-accent-color') || '#a764ff';
+                    this.borderGlow = this.$el.getAttribute('data-border-glow') !== 'false';
+                    this.cardColor = this.$el.getAttribute('data-card-color') || 'rgba(255,255,255,0.06)';
+                    this.glassIntensity = parseInt(this.$el.getAttribute('data-glass-intensity') || '20', 10);
+                    this.graphColor = this.$el.getAttribute('data-graph-color') || '#8b7be8';
+                    this.textColor = this.$el.getAttribute('data-text-color') || '#f5f5f6';
+                    
+                    this.updateStyles();
+                },
 
                 updateStyles() {
                     document.documentElement.setAttribute('data-devflow-theme', this.themeMode);
@@ -74,7 +95,7 @@
                     this.updateStyles();
                     this.savePreferences();
                 }
-             }|"
+             }"
              x-init="$watch('themeMode', value => updateStyles());
                      $watch('fontStyle', value => updateStyles());
                      $watch('accentColor', value => updateStyles());

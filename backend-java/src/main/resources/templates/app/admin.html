@@ -5,9 +5,13 @@
 
     <div th:replace="~{fragments/app-shell :: app-shell('Admin', '/app/admin', ~{::#admin-content})}">
         <div id="admin-content" 
-             th:x-data="|{
+             th:data-join-link="${currentUser != null ? currentUser.joinLink : 'http://localhost:8080/join/DEV-DEMO'}"
+             x-data="{
                 copied: false,
-                joinLink: '${currentUser != null ? currentUser.joinLink : 'http://localhost:8080/join/DEV-DEMO'}',
+                joinLink: '',
+                init() {
+                    this.joinLink = this.$el.getAttribute('data-join-link') || 'http://localhost:8080/join/DEV-DEMO';
+                },
                 async copyJoinLink() {
                     try {
                         await navigator.clipboard.writeText(this.joinLink);
@@ -17,7 +21,7 @@
                         console.error('Failed to copy join link', e);
                     }
                 }
-             }|"
+             }"
              class="space-y-6">
             
             <!-- Page Header -->

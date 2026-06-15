@@ -21,10 +21,18 @@
         <div>
             <!-- Form Card with AlpineJS state tracking -->
             <div class="liquid-glass rounded-[2rem] p-8" 
-                 th:x-data="|{ 
-                    accountType: '${prefilledCode != null ? 'team_member' : 'team_leader'}',
-                    fixedTeamCode: '${prefilledCode != null ? prefilledCode : ''}'
-                 }|">
+                 th:data-prefilled-code="${prefilledCode != null ? prefilledCode : ''}"
+                 x-data="{ 
+                    accountType: 'team_leader',
+                    fixedTeamCode: '',
+                    init() {
+                        const prefilled = this.$el.getAttribute('data-prefilled-code');
+                        if (prefilled) {
+                            this.fixedTeamCode = prefilled;
+                            this.accountType = 'team_member';
+                        }
+                    }
+                 }">
                 <p class="text-sm font-semibold uppercase tracking-[0.26em] text-white/60">Register</p>
                 <h2 class="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white">
                     Set up how you work.
