@@ -1,6 +1,6 @@
 <!-- fragments/app-shell.html -->
 <div th:fragment="app-shell (title, currentPath, bodyContent)"
-     x-data="{ 
+     th:x-data="|{ 
         menuOpen: false, 
         userMenuOpen: false, 
         commandPaletteOpen: false,
@@ -17,14 +17,15 @@
             this.contextPanelLinks = links;
             this.contextPanelOpen = true;
         },
-        themeMode: '[[${preferences != null ? preferences.themeMode : 'dark'}]]',
-        fontStyle: '[[${preferences != null ? preferences.fontStyle : 'dm-sans'}]]',
-        accentColor: '[[${preferences != null ? preferences.accentColor : '#a764ff'}]]',
-        borderGlow: [[${preferences != null ? preferences.borderGlow : true}]],
-        cardColor: '[[${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}]]',
-        glassIntensity: [[${preferences != null ? preferences.glassIntensity : 20}]],
-        graphColor: '[[${preferences != null ? preferences.graphColor : '#8b7be8'}]]',
-        textColor: '[[${preferences != null ? preferences.textColor : '#f5f5f6'}]]',
+        themeMode: '${preferences != null ? preferences.themeMode : 'dark'}',
+        fontStyle: '${preferences != null ? preferences.fontStyle : 'dm-sans'}',
+        accentColor: '${preferences != null ? preferences.accentColor : '#a764ff'}',
+        borderGlow: ${preferences != null ? preferences.borderGlow : true},
+        cardColor: '${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}',
+        glassIntensity: ${preferences != null ? preferences.glassIntensity : 20},
+        graphColor: '${preferences != null ? preferences.graphColor : '#8b7be8'}',
+        textColor: '${preferences != null ? preferences.textColor : '#f5f5f6'}'
+     }|"
         navItems: [
             { href: '/app/dashboard', label: 'Dashboard' },
             { href: '/app/projects', label: 'Projects' },
