@@ -24,8 +24,7 @@
         cardColor: '${preferences != null ? preferences.cardColor : 'rgba(255,255,255,0.06)'}',
         glassIntensity: ${preferences != null ? preferences.glassIntensity : 20},
         graphColor: '${preferences != null ? preferences.graphColor : '#8b7be8'}',
-        textColor: '${preferences != null ? preferences.textColor : '#f5f5f6'}'
-     }|"
+        textColor: '${preferences != null ? preferences.textColor : '#f5f5f6'}',
         navItems: [
             { href: '/app/dashboard', label: 'Dashboard' },
             { href: '/app/projects', label: 'Projects' },
@@ -66,7 +65,7 @@
             if (!this.searchQuery.trim()) return this.navItems;
             return this.navItems.filter(item => item.label.toLowerCase().includes(this.searchQuery.toLowerCase()));
         }
-     }"
+     }|"
      class="workspace-shell workspace-pattern min-h-screen">
     
     <!-- Header -->
