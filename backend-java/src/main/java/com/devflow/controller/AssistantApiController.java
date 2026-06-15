@@ -26,7 +26,7 @@ public class AssistantApiController {
         }
 
         try {
-            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
             // Prepare Request Body matching Google Gemini API contract
             Map<String, Object> geminiReq = new HashMap<>();
