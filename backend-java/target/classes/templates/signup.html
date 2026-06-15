@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow - Sign Up')}"></head>
+<body class="relative min-h-screen overflow-hidden purple-noise text-white">
+    <div class="absolute inset-0 purple-grid opacity-30"></div>
+    
+    <!-- Navbar -->
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
+    
+    <div class="section-shell relative grid min-h-screen items-center gap-10 py-28 lg:grid-cols-[0.9fr,1.1fr]">
+        <div class="max-w-2xl">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Sign Up</p>
+            <h1 class="mt-5 text-balance text-5xl font-medium tracking-[-0.07em] text-white sm:text-6xl">
+                Bring your team into one workflow.
+            </h1>
+            <p class="mt-5 max-w-xl text-base leading-8 text-white/76 sm:text-lg">
+                Start with product planning, review workflows, documentation, and release visibility in one place.
+            </p>
+        </div>
+        
+        <div>
+            <!-- Form Card with AlpineJS state tracking -->
+            <div class="liquid-glass rounded-[2rem] p-8" 
+                 x-data="{ 
+                    accountType: '[[${prefilledCode != null ? 'team_member' : 'team_leader'}]]',
+                    fixedTeamCode: '[[${prefilledCode != null ? prefilledCode : ''}]]'
+                 }">
+                <p class="text-sm font-semibold uppercase tracking-[0.26em] text-white/60">Register</p>
+                <h2 class="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white">
+                    Set up how you work.
+                </h2>
+
+                <!-- Error Alert -->
+                <div th:if="${errorMessage}" class="mt-4 p-3 rounded-xl bg-rose-500/20 border border-rose-500/30 text-sm text-rose-200" th:text="${errorMessage}">
+                </div>
+
+                <form class="mt-8 grid gap-5" th:action="@{/register}" method="post" th:object="${registerRequest}">
+                    
+                    <!-- Account Type Select -->
+                    <label class="grid gap-2">
+                        <span class="text-sm text-white/80">Account type</span>
+                        <select class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none"
+                                name="accountType"
+                                x-model="accountType"
+                                :disabled="fixedTeamCode !== ''">
+                            <option value="team_leader" class="bg-zinc-950">Team Leader</option>
+                            <option value="team_member" class="bg-zinc-950">Team Member</option>
+                            <option value="solo_user" class="bg-zinc-950">Solo User</option>
+                            <option value="organization_admin" class="bg-zinc-950">Organization Admin</option>
+                        </select>
+                    </label>
+                    
+                    <label class="grid gap-2">
+                        <span class="text-sm text-white/80">Display Name</span>
+                        <input class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+                               placeholder="Mira"
+                               name="displayName"
+                               required />
+                    </label>
+                    
+                    <label class="grid gap-2">
+                        <span class="text-sm text-white/80">Email</span>
+                        <input class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+                               placeholder="mira@team.dev"
+                               name="email"
+                               type="email"
+                               required />
+                    </label>
+                    
+                    <label class="grid gap-2">
+                        <span class="text-sm text-white/80">Password</span>
+                        <input class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+                               placeholder="••••••••"
+                               name="password"
+                               type="password"
+                               required />
+                    </label>
+
+                    <!-- Team Name (Visible if Team Leader) -->
+                    <div x-show="accountType === 'team_leader'" x-transition style="display: none;">
+                        <label class="grid gap-2">
+                            <span class="text-sm text-white/80">Team name</span>
+                            <input class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+                                   placeholder="Platform Crew"
+                                   name="teamName" />
+                        </label>
+                    </div>
+
+                    <!-- Organization Name (Visible if Org Admin) -->
+                    <div x-show="accountType === 'organization_admin'" x-transition style="display: none;">
+                        <label class="grid gap-2">
+                            <span class="text-sm text-white/80">Organization name</span>
+                            <input class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+                                   placeholder="DevFlow Labs"
+                                   name="organizationName" />
+                        </label>
+                    </div>
+
+                    <!-- Team Code (Visible if Team Member) -->
+                    <div x-show="accountType === 'team_member'" x-transition style="display: none;">
+                        <label class="grid gap-2">
+                            <span class="text-sm text-white/80" x-text="fixedTeamCode ? 'Team code from join link' : 'Team code'">Team code</span>
+                            <input class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+                                   placeholder="DEV-AB12"
+                                   name="teamCode"
+                                   x-model="fixedTeamCode"
+                                   :readonly="fixedTeamCode !== ''" />
+                        </label>
+                    </div>
+
+                    <button class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-100 hover:scale-[1.01]"
+                            type="submit"
+                            x-text="fixedTeamCode ? 'Join Team' : 'Create Workspace'">
+                        Create Workspace
+                    </button>
+                </form>
+                
+                <div class="mt-6 flex flex-wrap gap-3 text-sm text-white/72">
+                    <a class="hover:text-white transition" href="/login">
+                        Already have an account? Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

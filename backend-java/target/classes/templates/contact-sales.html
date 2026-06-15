@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow - Contact Sales')}"></head>
+<body class="overflow-x-hidden bg-white text-zinc-950">
+
+    <!-- Header / Nav -->
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
+
+    <div class="overflow-x-hidden bg-white text-zinc-950">
+        <!-- Hero Section -->
+        <div class="relative overflow-hidden purple-noise text-white">
+            <div class="absolute inset-0 purple-grid opacity-30"></div>
+            <section class="relative overflow-hidden pb-16 pt-32 sm:pt-36 lg:pt-40">
+                <div class="absolute right-[-8rem] top-[-6rem] h-[34rem] w-[34rem] rounded-full bg-black/40 blur-3xl"></div>
+                <div class="section-shell relative">
+                    <div class="max-w-4xl">
+                        <span class="eyebrow border-white/15 bg-white/8 text-white/70">CONTACT SALES</span>
+                        <h1 class="mt-6 max-w-4xl text-balance text-5xl font-medium tracking-[-0.07em] text-white sm:text-6xl lg:text-[5.1rem] leading-none">
+                            Scale DevFlow with the right team setup.
+                        </h1>
+                        <p class="mt-6 max-w-2xl text-lg leading-8 text-white/78">
+                            Share your team size, process complexity, and rollout needs. We will shape a DevFlow plan around pricing, adoption, and integrations.
+                        </p>
+                        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                            <a class="inline-flex items-center justify-center rounded-full bg-zinc-950 text-white shadow-[0_16px_30px_rgba(9,9,11,0.28)] hover:bg-black h-12 px-6 text-sm font-semibold transition hover:scale-[1.02]" href="#contact-sales-form">
+                                Contact Sales
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Form Content -->
+        <section class="bg-white py-20 md:py-28" id="contact-sales-form">
+            <div class="section-shell" x-data="{ submitted: false }">
+                <!-- Success State -->
+                <div x-show="submitted" class="rounded-[2rem] border border-zinc-200 bg-zinc-50 p-8" style="display: none;">
+                    <p class="text-sm uppercase tracking-[0.24em] text-zinc-500">Sales request received</p>
+                    <h2 class="mt-4 text-3xl font-medium tracking-[-0.05em] text-zinc-950">Your DevFlow sales request is in.</h2>
+                    <p class="mt-4 max-w-xl text-base leading-8 text-zinc-600">
+                        Thanks. We would normally route this to our sales and onboarding team so they can prepare a pricing walkthrough, rollout recommendation, and workspace demo for you.
+                    </p>
+                </div>
+
+                <!-- Form State -->
+                <div x-show="!submitted" class="grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
+                    <div class="rounded-[2rem] bg-[#ebe9e5] p-8">
+                        <p class="text-sm uppercase tracking-[0.24em] text-zinc-500">Contact Sales</p>
+                        <h2 class="mt-4 text-3xl font-medium tracking-[-0.05em] text-zinc-950">Talk through rollout, pricing, and team fit.</h2>
+                        <p class="mt-4 text-base leading-8 text-zinc-600">
+                            Tell us about your org, workflows, and collaboration pain points so we can shape the right DevFlow plan.
+                        </p>
+                        <div class="mt-8 space-y-3 text-sm text-zinc-600">
+                            <p>Included in the walkthrough:</p>
+                            <p>✓ Project planning and task tracking</p>
+                            <p>✓ Review Zone and docs workflows</p>
+                            <p>✓ Release readiness and sprint visibility</p>
+                        </div>
+                    </div>
+                    
+                    <form class="rounded-[2rem] border border-zinc-200 bg-white p-8 shadow-[0_20px_45px_rgba(24,24,27,0.06)]"
+                          @submit.prevent="submitted = true">
+                        <div class="grid gap-5">
+                            <label class="grid gap-2">
+                                <span class="text-sm font-medium text-zinc-700">Name</span>
+                                <input class="h-12 rounded-2xl border border-zinc-200 px-4 outline-none transition focus:border-zinc-950" required type="text">
+                            </label>
+                            <label class="grid gap-2">
+                                <span class="text-sm font-medium text-zinc-700">Work Email</span>
+                                <input class="h-12 rounded-2xl border border-zinc-200 px-4 outline-none transition focus:border-zinc-950" required type="email">
+                            </label>
+                            <label class="grid gap-2">
+                                <span class="text-sm font-medium text-zinc-700">Team Size</span>
+                                <select class="h-12 rounded-2xl border border-zinc-200 px-4 outline-none transition focus:border-zinc-950" required>
+                                    <option value="">Select a team size</option>
+                                    <option value="1-5">1-5</option>
+                                    <option value="6-25">6-25</option>
+                                    <option value="26-100">26-100</option>
+                                    <option value="100+">100+</option>
+                                </select>
+                            </label>
+                            <label class="grid gap-2">
+                                <span class="text-sm font-medium text-zinc-700">What are you replacing?</span>
+                                <textarea class="min-h-32 rounded-2xl border border-zinc-200 px-4 py-3 outline-none transition focus:border-zinc-950" 
+                                          placeholder="Project planning tools, docs tools, review tools, release tracking..." required></textarea>
+                            </label>
+                            <button class="w-full inline-flex items-center justify-center rounded-full bg-zinc-950 text-white shadow-[0_16px_30px_rgba(9,9,11,0.28)] hover:bg-black h-12 px-6 text-sm font-semibold transition hover:scale-[1.02]" type="submit">
+                                Contact Sales
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="relative overflow-hidden purple-noise text-white">
+            <div class="absolute inset-0 purple-grid opacity-25"></div>
+            <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </div>
+    </div>
+
+</body>
+</html>

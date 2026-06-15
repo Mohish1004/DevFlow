@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow Workspace - Tasks')}"></head>
+<body class="overflow-x-hidden">
+
+    <div th:replace="~{fragments/app-shell :: app-shell('Tasks', '/app/tasks', ~{::#tasks-content})}">
+        <div id="tasks-content" 
+             x-data="{
+                view: 'list',
+                tasks: [],
+                newTask: {
+                    title: '',
+                    description: '',
+                    assignee: '',
+                    deadline: '',
+                    priority: 'Medium',
+                    githubLink: ''
+                },
+                errorMessage: '',
+                successMessage: '',
+                
+                async fetchTasks() {
+                    try {
+                        let res = await fetch('/api/tasks');
+                        if (res.ok) {
+                            this.tasks = await res.json();
+                        }
+                    } catch(e) {
+                        console.error('Failed to load tasks', e);
+                    }
+                },
+                
+                async handleAddTask() {
+                    this.errorMessage = '';
+                    this.successMessage = '';
+                    if (!this.newTask.title || !this.newTask.description || !this.newTask.assignee || !this.newTask.deadline || !this.newTask.githubLink) {
+                        this.errorMessage = 'All fields are required.';
+                        return;
+                    }
+                    try {
+                        let res = await fetch('/api/tasks', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                title: this.newTask.title,
+                                description: this.newTask.description,
+                                assignee: this.newTask.assignee,
+                                deadline: this.newTask.deadline,
+                                priority: this.newTask.priority,
+                                githubLink: this.newTask.githubLink,
+                                status: 'PENDING',
+                                checkpoints: [
+                                    { title: 'Task created', completed: true },
+                                    { title: 'Implementation started', completed: false }
+                                ]
+                            })
+                        });
+                        if (res.ok) {
+                            this.successMessage = 'Task created successfully!';
+                            this.newTask = { title: '', description: '', assignee: '', deadline: '', priority: 'Medium', githubLink: '' };
+                            await this.fetchTasks();
+                        } else {
+                            this.errorMessage = 'Failed to create task.';
+                        }
+                    } catch(e) {
+                        this.errorMessage = 'Network error.';
+                    }
+                },
+                
+                async updateTaskStatus(id, newStatus) {
+                    try {
+                        let res = await fetch(`/api/tasks/${id}/status?status=${newStatus}`, { method: 'PATCH' });
+                        if (res.ok) {
+                            await this.fetchTasks();
+                        }
+                    } catch(e) {
+                        console.error('Failed to update status', e);
+                    }
+                },
+
+                get backlogTasks() {
+                    return this.tasks.filter(t => ['NOT_STARTED', 'PENDING'].includes(t.status));
+                },
+                get activeTasks() {
+                    return this.tasks.filter(t => ['STARTED', 'IN_PROGRESS', 'YET_TO_COMPLETE', 'SUBMITTED'].includes(t.status));
+                },
+                get reviewTasks() {
+                    return this.tasks.filter(t => ['UNDER_REVIEW', 'CHANGES_REQUIRED', 'COMPLETED', 'APPROVED'].includes(t.status));
+                }
+             }"
+             x-init="await fetchTasks()"
+             class="space-y-6">
+            
+            <!-- Page Header -->
+            <div class="space-y-2">
+                <span class="eyebrow border-white/10 bg-white/5 text-white/70">Tasks</span>
+                <h1 class="text-3xl font-semibold tracking-[-0.05em] text-white">Tasks, checkpoints, and status flow</h1>
+                <p class="workspace-muted text-sm max-w-3xl leading-7">
+                    Manage sprint tickets, toggle checkpoints, and filter work items. Persistent state synced via Spring Boot endpoints.
+                </p>
+            </div>
+
+            <!-- Double Column Layout -->
+            <div class="grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
+                
+                <!-- Left: Create Task Form -->
+                <form class="workspace-card rounded-[1.75rem] p-6 h-fit" @submit.prevent="await handleAddTask()">
+                    <p class="text-xl font-semibold tracking-[-0.04em] text-white">Create task</p>
+                    
+                    <div x-show="errorMessage" class="mt-4 p-3 rounded-xl bg-rose-500/20 border border-rose-500/30 text-xs text-rose-200" x-text="errorMessage" style="display: none;"></div>
+                    <div x-show="successMessage" class="mt-4 p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-xs text-emerald-200" x-text="successMessage" style="display: none;"></div>
+
+                    <div class="mt-5 grid gap-4">
+                        <input x-model="newTask.title" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35" placeholder="Task title" required />
+                        
+                        <textarea x-model="newTask.description" class="min-h-28 rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35" placeholder="Task description" required></textarea>
+                        
+                        <div class="grid gap-4 md:grid-cols-3">
+                            <input x-model="newTask.assignee" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35" placeholder="Assignee" required />
+                            
+                            <input x-model="newTask.deadline" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35" type="date" required />
+                            
+                            <select x-model="newTask.priority" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none">
+                                <option value="Low" class="bg-zinc-950">Low</option>
+                                <option value="Medium" class="bg-zinc-950">Medium</option>
+                                <option value="High" class="bg-zinc-950">High</option>
+                            </select>
+                        </div>
+                        
+                        <input x-model="newTask.githubLink" class="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/35" placeholder="https://github.com/..." required />
+                        
+                        <button class="rounded-full bg-white px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-zinc-100 transition duration-300 hover:scale-[1.01]" type="submit">
+                            Add task
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Right: Task View Tabs and Panels -->
+                <div class="workspace-card rounded-[1.75rem] p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <p class="text-xl font-semibold tracking-[-0.04em] text-white">Task views</p>
+                        
+                        <!-- Tabs -->
+                        <div class="flex flex-wrap gap-2">
+                            <button class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition"
+                                    :class="view === 'list' ? 'bg-white text-zinc-950 font-semibold' : 'border border-white/10 text-white/75 hover:bg-white/5'"
+                                    @click="view = 'list'" type="button">
+                                📋 List
+                            </button>
+                            <button class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition"
+                                    :class="view === 'board' ? 'bg-white text-zinc-950 font-semibold' : 'border border-white/10 text-white/75 hover:bg-white/5'"
+                                    @click="view = 'board'" type="button">
+                                📊 Board
+                            </button>
+                            <button class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition"
+                                    :class="view === 'timeline' ? 'bg-white text-zinc-950 font-semibold' : 'border border-white/10 text-white/75 hover:bg-white/5'"
+                                    @click="view = 'timeline'" type="button">
+                                📅 Timeline
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List View -->
+                    <div x-show="view === 'list'" class="mt-5 grid gap-3" x-transition>
+                        <template x-for="task in tasks" :key="task.id">
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                                <div class="flex flex-wrap items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-lg font-semibold text-white" x-text="task.title"></p>
+                                        <p class="workspace-muted mt-2 text-sm leading-7" x-text="task.description"></p>
+                                    </div>
+                                    <select class="rounded-full border border-white/10 bg-transparent px-3 py-2 text-xs text-white outline-none"
+                                            :value="task.status"
+                                            @change="await updateTaskStatus(task.id, $event.target.value)">
+                                        <option value="NOT_STARTED" class="bg-zinc-950">Not Started</option>
+                                        <option value="PENDING" class="bg-zinc-950">Pending</option>
+                                        <option value="STARTED" class="bg-zinc-950">Started</option>
+                                        <option value="IN_PROGRESS" class="bg-zinc-950">In Progress</option>
+                                        <option value="YET_TO_COMPLETE" class="bg-zinc-950">Yet To Complete</option>
+                                        <option value="SUBMITTED" class="bg-zinc-950">Submitted</option>
+                                        <option value="UNDER_REVIEW" class="bg-zinc-950">Under Review</option>
+                                        <option value="CHANGES_REQUIRED" class="bg-zinc-950">Changes Required</option>
+                                        <option value="COMPLETED" class="bg-zinc-950">Completed</option>
+                                        <option value="APPROVED" class="bg-zinc-950">Approved</option>
+                                    </select>
+                                </div>
+                                <div class="mt-4 flex flex-wrap gap-2 text-xs text-white/65">
+                                    <span x-text="task.assignee"></span>
+                                    <span>•</span>
+                                    <span x-text="task.priority"></span>
+                                    <span>•</span>
+                                    <span x-text="'Due ' + task.deadline"></span>
+                                </div>
+                                
+                                <button class="mt-4 inline-flex items-center gap-2 text-xs text-white/80 hover:text-white transition"
+                                        @click="openContextPanel(task.title, task.description, task.checkpoints.map(c => (c.completed ? 'Done' : 'Open') + ' · ' + c.title), [{href: task.githubLink, label: 'Open GitHub link'}])"
+                                        type="button">
+                                    📍 View context
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Kanban Board View -->
+                    <div x-show="view === 'board'" class="mt-5 grid gap-4 xl:grid-cols-3" x-transition style="display: none;">
+                        <!-- Backlog Column -->
+                        <div class="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-white/65 mb-4">Backlog</p>
+                            <div class="grid gap-3">
+                                <template x-for="task in backlogTasks" :key="task.id">
+                                    <div class="workspace-card rounded-[1rem] p-4 cursor-pointer hover:bg-white/5 transition"
+                                         @click="openContextPanel(task.title, task.description, task.checkpoints.map(c => (c.completed ? 'Done' : 'Open') + ' · ' + c.title), [{href: task.githubLink, label: 'Open GitHub link'}])">
+                                        <p class="text-sm font-semibold text-white" x-text="task.title"></p>
+                                        <p class="workspace-muted mt-2 text-xs" x-text="task.status.replaceAll('_', ' ')"></p>
+                                    </div>
+                                </template>
+                                <div x-show="backlogTasks.length === 0" class="text-center py-6 text-xs text-white/30 border border-dashed border-white/10 rounded-xl">
+                                    Backlog is clear
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Column -->
+                        <div class="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-white/65 mb-4">Active</p>
+                            <div class="grid gap-3">
+                                <template x-for="task in activeTasks" :key="task.id">
+                                    <div class="workspace-card rounded-[1rem] p-4 cursor-pointer hover:bg-white/5 transition"
+                                         @click="openContextPanel(task.title, task.description, task.checkpoints.map(c => (c.completed ? 'Done' : 'Open') + ' · ' + c.title), [{href: task.githubLink, label: 'Open GitHub link'}])">
+                                        <p class="text-sm font-semibold text-white" x-text="task.title"></p>
+                                        <p class="workspace-muted mt-2 text-xs" x-text="task.status.replaceAll('_', ' ')"></p>
+                                    </div>
+                                </template>
+                                <div x-show="activeTasks.length === 0" class="text-center py-6 text-xs text-white/30 border border-dashed border-white/10 rounded-xl">
+                                    No active tasks
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review/Done Column -->
+                        <div class="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-white/65 mb-4">Review / Done</p>
+                            <div class="grid gap-3">
+                                <template x-for="task in reviewTasks" :key="task.id">
+                                    <div class="workspace-card rounded-[1rem] p-4 cursor-pointer hover:bg-white/5 transition"
+                                         @click="openContextPanel(task.title, task.description, task.checkpoints.map(c => (c.completed ? 'Done' : 'Open') + ' · ' + c.title), [{href: task.githubLink, label: 'Open GitHub link'}])">
+                                        <p class="text-sm font-semibold text-white" x-text="task.title"></p>
+                                        <p class="workspace-muted mt-2 text-xs" x-text="task.status.replaceAll('_', ' ')"></p>
+                                    </div>
+                                </template>
+                                <div x-show="reviewTasks.length === 0" class="text-center py-6 text-xs text-white/30 border border-dashed border-white/10 rounded-xl">
+                                    No review tasks
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline View -->
+                    <div x-show="view === 'timeline'" class="mt-5 grid gap-3" x-transition style="display: none;">
+                        <template x-for="task in [...tasks].sort((a,b) => a.deadline.localeCompare(b.deadline))" :key="task.id">
+                            <div class="rounded-[1.25rem] border border-white/10 bg-black/20 p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm">✔</span>
+                                    <p class="text-sm font-semibold text-white" x-text="task.title"></p>
+                                </div>
+                                <p class="workspace-muted text-xs" x-text="'Due ' + task.deadline"></p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

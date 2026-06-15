@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('DevFlow - Pricing')}"></head>
+<body class="overflow-x-hidden bg-white text-zinc-950">
+
+    <!-- Header / Nav -->
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
+
+    <div class="overflow-x-hidden bg-white text-zinc-950">
+        <!-- Hero Section -->
+        <div class="relative overflow-hidden purple-noise text-white">
+            <div class="absolute inset-0 purple-grid opacity-30"></div>
+            <section class="relative overflow-hidden pb-16 pt-32 sm:pt-36 lg:pt-40">
+                <div class="absolute right-[-8rem] top-[-6rem] h-[34rem] w-[34rem] rounded-full bg-black/40 blur-3xl"></div>
+                <div class="section-shell relative">
+                    <div class="max-w-4xl">
+                        <span class="eyebrow border-white/15 bg-white/8 text-white/70">PRICING</span>
+                        <h1 class="mt-6 max-w-4xl text-balance text-5xl font-medium tracking-[-0.07em] text-white sm:text-6xl lg:text-[5.1rem] leading-none">
+                            Pricing for dev teams.
+                        </h1>
+                        <p class="mt-6 max-w-2xl text-lg leading-8 text-white/78">
+                            DevFlow scales with your engineering team. Pick a plan to unify your planning, review, docs, and releases.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Content -->
+        <div class="bg-white">
+            <!-- Pricing -->
+            <div th:replace="~{index :: #pricing}"></div>
+        </div>
+
+        <!-- Final CTA & Footer -->
+        <div class="relative overflow-hidden purple-noise text-white">
+            <div class="absolute inset-0 purple-grid opacity-25"></div>
+            <div th:replace="~{index :: #final-cta}"></div>
+            <footer th:replace="~{fragments/footer :: footer}"></footer>
+        </div>
+    </div>
+
+</body>
+</html>
