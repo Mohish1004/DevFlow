@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-const avatars = ["/assets/4.png", "/assets/1.png", "/assets/3.png", "/assets/2.png"];
+const avatars = ["/content/4.png", "/content/1.png", "/content/3.png", "/content/2.png"];
 
 export function Hero() {
   return (

@@ -8,17 +8,17 @@ export const navLinks = [
 export const featureCards = [
   {
     description: "Plan, track, and manage all your projects.",
-    imageSrc: "/assets/frame-1707479758-1.jpg",
+    imageSrc: "/content/frame-1707479758-1.jpg",
     title: "Project Management",
   },
   {
     description: "Streamline code reviews and feedback.",
-    imageSrc: "/assets/frame-1707479758-2.jpg",
+    imageSrc: "/content/frame-1707479758-2.jpg",
     title: "Review Zone",
   },
   {
     description: "Automate tasks and get smart insights.",
-    imageSrc: "/assets/frame-1707479758.jpg",
+    imageSrc: "/content/frame-1707479758.jpg",
     title: "AI Assistant",
   },
 ] as const;
@@ -27,21 +27,21 @@ export const keyFeatures = [
   {
     description:
       "Manage projects, assign tasks, and track progress with Kanban boards, all in one intuitive workspace.",
-    imageSrc: "/assets/frame-1707479969.jpg",
+    imageSrc: "/content/frame-1707479969.jpg",
     kicker: "Feature 1",
     title: "Project Management & Task Tracking.",
   },
   {
     description:
       "Streamline code reviews, manage team documentation, and onboard new members efficiently.",
-    imageSrc: "/assets/frame-1707479970.jpg",
+    imageSrc: "/content/frame-1707479970.jpg",
     kicker: "Feature 2",
     title: "Review Zone & Documentation.",
   },
   {
     description:
       "Conduct meetings, collaborate in real-time, and get insights with an AI assistant.",
-    imageSrc: "/assets/frame-1707479971.jpg",
+    imageSrc: "/content/frame-1707479971.jpg",
     kicker: "Feature 3",
     title: "Meetings & Realtime Productivity.",
   },
@@ -79,21 +79,21 @@ export const benefits = [
 
 export const testimonials = [
   {
-    imageSrc: "/assets/image-1927.png",
+    imageSrc: "/content/image-1927.png",
     name: "Jane Doe",
     quote:
       "DevFlow has revolutionized our development process. Our team stays in sync, and productivity has soared. A game-changer!",
     role: "CTO, TechCorp",
   },
   {
-    imageSrc: "/assets/image-1928.png",
+    imageSrc: "/content/image-1928.png",
     name: "Alex Smith",
     quote:
       "The unified workspace is incredible. No more jumping between apps - everything we need is right here. Highly recommended.",
     role: "Lead Dev, Innovate Solutions",
   },
   {
-    imageSrc: "/assets/image-1929.png",
+    imageSrc: "/content/image-1929.png",
     name: "Maria Garcia",
     quote: "Their insights were practical, data-driven, and immediately actionable.",
     role: "Product Manager, Global Dev",

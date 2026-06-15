@@ -3,13 +3,13 @@ import Image from "next/image";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const partners = [
-  { image: "/assets/div-framer-1lv732o-4.svg", label: "Nike" },
-  { image: "/assets/div-framer-1lv732o-.svg", label: "Google" },
-  { image: "/assets/prada-logo-1.svg", label: "Prada" },
-  { image: "/assets/div-framer-1lv732o-2.svg", label: "Sony" },
-  { image: "/assets/disney-wordmark-1.svg", label: "Disney" },
-  { image: "/assets/div-framer-1lv732o-3.svg", label: "Apple Music" },
-  { image: "/assets/div-framer-1lv732o-5.svg", label: "AMG" },
+  { image: "/content/div-framer-1lv732o-4.svg", label: "Nike" },
+  { image: "/content/div-framer-1lv732o-.svg", label: "Google" },
+  { image: "/content/prada-logo-1.svg", label: "Prada" },
+  { image: "/content/div-framer-1lv732o-2.svg", label: "Sony" },
+  { image: "/content/disney-wordmark-1.svg", label: "Disney" },
+  { image: "/content/div-framer-1lv732o-3.svg", label: "Apple Music" },
+  { image: "/content/div-framer-1lv732o-5.svg", label: "AMG" },
 ];
 
 export function TrustedBy() {
