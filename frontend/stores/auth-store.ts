@@ -15,10 +15,21 @@ import {
 import { api, ApiError } from "@/services/api-client";
 import type { AccountType, WorkspaceUser } from "@/lib/workspace-types";
 
+type RegisterDemoPayload = {
+  accountType: AccountType;
+  displayName: string;
+  email: string;
+  organizationName?: string;
+  teamCode?: string;
+  teamName?: string;
+};
+
 type AuthState = {
   hydrated: boolean;
   loading: boolean;
   user: WorkspaceUser | null;
+  loginWithDemo: (payload: Pick<WorkspaceUser, "displayName" | "email">) => void;
+  registerWithDemo: (payload: RegisterDemoPayload) => WorkspaceUser;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   registerWithEmail: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
@@ -86,6 +97,26 @@ export const useAuthStore = create<AuthState>()(
       },
       loading: false,
     });
+  },
+
+  registerWithDemo: (payload: RegisterDemoPayload) => {
+    const teamCode = payload.accountType === "team_member"
+      ? (payload.teamCode ?? `DEMO-${Math.random().toString(36).slice(2, 6).toUpperCase()}`)
+      : payload.accountType === "solo_user"
+        ? undefined
+        : `DEMO-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    const user: WorkspaceUser = {
+      accountType: payload.accountType,
+      displayName: payload.displayName,
+      email: payload.email,
+      joinLink: teamCode ? `${window.location.origin}/join/${teamCode}` : undefined,
+      mode: "demo",
+      organizationName: payload.organizationName,
+      teamCode,
+      teamName: payload.teamName,
+    };
+    set({ user, loading: false });
+    return user;
   },
 
   loginWithEmail: async (email: string, password: string) => {
