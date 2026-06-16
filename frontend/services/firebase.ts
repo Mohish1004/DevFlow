@@ -1,4 +1,5 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAnalytics, isSupported, Analytics } from "firebase/analytics";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -20,16 +21,23 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
 
 let app: FirebaseApp;
 let auth: Auth;
+let analytics: Analytics | null = null;
 
 const hasFirebaseConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
 
 if (hasFirebaseConfig) {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
   auth = getAuth(app);
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
 }
 
 export async function getFirebaseToken(): Promise<string | null> {
@@ -42,7 +50,9 @@ export async function getFirebaseToken(): Promise<string | null> {
 }
 
 export {
+  app,
   auth,
+  analytics,
   hasFirebaseConfig,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
