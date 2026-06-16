@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: devflow-backend
+    env: docker
+    repo: https://github.com/YOUR_USERNAME/DevFlow
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SPRING_DATASOURCE_DRIVER
+        value: org.postgresql.Driver
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://your-frontend.vercel.app
+      - key: JAVA_OPTS
+        value: -Xmx256m -Xms128m
+    healthCheckPath: /api/me

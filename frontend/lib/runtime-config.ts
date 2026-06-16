@@ -9,6 +9,8 @@ const firebaseEnvKeys = [
 
 export const isProduction = process.env.NODE_ENV === "production";
 
+export const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
 export const firebaseConfigured = firebaseEnvKeys.every((key) => Boolean(process.env[key]));
 
 export const demoModeEnabled =
@@ -23,12 +25,12 @@ export const authMode = firebaseConfigured
 
 export function getAuthSetupMessage() {
   if (authMode === "firebase") {
-    return null;
+    return "Authenticate with your Firebase account to access the workspace.";
   }
 
   if (authMode === "demo") {
-    return "Demo auth is enabled in development. Real Firebase auth must replace this before production.";
+    return "Demo mode — no real authentication. Your data is stored locally.";
   }
 
-  return "Firebase environment variables are missing. Production auth must be configured before protected app routes can be used honestly.";
+  return "Firebase environment variables are missing. Set them in your Vercel dashboard to enable production auth.";
 }

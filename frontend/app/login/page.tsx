@@ -4,8 +4,8 @@ import { PublicAuthFrame } from "@/components/auth/PublicAuthFrame";
 export default function LoginPage() {
   return (
     <PublicAuthFrame
-      description="Use email/password sign-in today, with Firebase-backed production auth expected before deployment."
-      eyebrow="LOGIN"
+      description="Sign in with Google, GitHub, or email to access your workspace."
+      eyebrow="WELCOME BACK"
       title="Sign back into DevFlow."
     >
       <LoginForm />

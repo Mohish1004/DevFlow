@@ -6,12 +6,18 @@ import com.devflow.model.UserPreferences;
 import com.devflow.model.enums.AccountType;
 import com.devflow.repository.UserRepository;
 import com.devflow.repository.UserPreferencesRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -21,8 +27,8 @@ public class AuthController {
     private final UserPreferencesRepository userPreferencesRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository userRepository, 
-                          UserPreferencesRepository userPreferencesRepository, 
+    public AuthController(UserRepository userRepository,
+                          UserPreferencesRepository userPreferencesRepository,
                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userPreferencesRepository = userPreferencesRepository;
@@ -34,12 +40,12 @@ public class AuthController {
         if (authentication == null || !authentication.isAuthenticated()) {
             return false;
         }
-        return !(authentication.getPrincipal() instanceof String && 
+        return !(authentication.getPrincipal() instanceof String &&
                  authentication.getPrincipal().equals("anonymousUser"));
     }
 
     @GetMapping("/login")
-    public String login(Model model, 
+    public String login(Model model,
                         @RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "logout", required = false) String logout,
                         @RequestParam(value = "registered", required = false) String registered) {
@@ -124,7 +130,6 @@ public class AuthController {
 
         userRepository.save(user);
 
-        // Save default user preferences
         UserPreferences prefs = UserPreferences.builder()
                 .themeMode("dark")
                 .fontStyle("dm-sans")
@@ -139,5 +144,28 @@ public class AuthController {
         userPreferencesRepository.save(prefs);
 
         return "redirect:/login?registered=true";
+    }
+
+    @GetMapping("/api/me")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Optional<User> optionalUser = userRepository.findByEmail(principal.getName());
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(401).build();
+        }
+        User user = optionalUser.get();
+        Map<String, Object> result = new HashMap<>();
+        result.put("email", user.getEmail());
+        result.put("displayName", user.getDisplayName());
+        result.put("accountType", user.getAccountType().name());
+        result.put("teamCode", user.getTeamCode());
+        result.put("teamName", user.getTeamName());
+        result.put("organizationName", user.getOrganizationName());
+        result.put("joinLink", user.getJoinLink());
+        result.put("mode", user.getMode());
+        return ResponseEntity.ok(result);
     }
 }

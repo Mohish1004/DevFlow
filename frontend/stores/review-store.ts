@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
+import { api } from "@/services/api-client";
 import { initialReviews } from "@/lib/workspace-data";
 import type { ReviewItem, ReviewStatus } from "@/lib/workspace-types";
 
@@ -16,6 +16,7 @@ type CreateReviewPayload = {
 
 type ReviewState = {
   createReview: (payload: CreateReviewPayload) => void;
+  fetchReviews: () => Promise<void>;
   reviews: ReviewItem[];
   updateReviewStatus: (reviewId: string, status: ReviewStatus) => void;
 };
@@ -27,25 +28,36 @@ function timestamp() {
 export const useReviewStore = create<ReviewState>()(
   persist(
     (set) => ({
-      createReview: (payload) =>
-        set((state) => ({
-          reviews: [
-            {
-              ...payload,
-              id: `review-${crypto.randomUUID()}`,
-              status: "Waiting for Review",
-              submittedAt: timestamp(),
-            },
-            ...state.reviews,
-          ],
-        })),
       reviews: initialReviews,
-      updateReviewStatus: (reviewId, status) =>
+
+      fetchReviews: async () => {
+        try {
+          const serverReviews = await api.get<ReviewItem[]>("/api/reviews");
+          set({ reviews: serverReviews });
+        } catch {
+          /* keep local */
+        }
+      },
+
+      createReview: (payload) => {
+        const newReview: ReviewItem = {
+          ...payload,
+          id: `review-${crypto.randomUUID()}`,
+          status: "Waiting for Review",
+          submittedAt: timestamp(),
+        };
+        set((state) => ({ reviews: [newReview, ...state.reviews] }));
+        api.post("/api/reviews", newReview).catch(() => {});
+      },
+
+      updateReviewStatus: (reviewId, status) => {
         set((state) => ({
           reviews: state.reviews.map((review) =>
             review.id === reviewId ? { ...review, status } : review,
           ),
-        })),
+        }));
+        api.patch(`/api/reviews/${reviewId}/status?status=${status}`).catch(() => {});
+      },
     }),
     {
       name: "devflow-reviews",

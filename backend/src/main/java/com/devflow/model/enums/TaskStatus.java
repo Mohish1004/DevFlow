@@ -1,5 +1,8 @@
 package com.devflow.model.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum TaskStatus {
     NOT_STARTED("Not Started"),
     PENDING("Pending"),
@@ -18,7 +21,18 @@ public enum TaskStatus {
         this.displayName = displayName;
     }
 
+    @JsonValue
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static TaskStatus fromDisplayName(String displayName) {
+        for (TaskStatus status : values()) {
+            if (status.displayName.equals(displayName)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown TaskStatus: " + displayName);
     }
 }

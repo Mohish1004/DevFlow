@@ -14,19 +14,18 @@ import { useUiStore } from "@/stores/ui-store";
 
 type ProtectedAppShellProps = {
   children: React.ReactNode;
-  hasSession: boolean;
 };
 
-export function ProtectedAppShell({ children, hasSession }: ProtectedAppShellProps) {
+export function ProtectedAppShell({ children }: ProtectedAppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { openCommandPalette } = useUiStore();
-  const { hydrated, logout, user } = useAuthStore();
+  const { hydrated, loading, logout, user } = useAuthStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!hydrated) {
+    if (!hydrated || loading) {
       return;
     }
 
@@ -34,12 +33,12 @@ export function ProtectedAppShell({ children, hasSession }: ProtectedAppShellPro
       return;
     }
 
-    if (!user && !hasSession) {
+    if (!user) {
       router.replace("/login");
     }
-  }, [hasSession, hydrated, router, user]);
+  }, [hydrated, loading, router, user]);
 
-  if (!hydrated && !hasSession) {
+  if (loading || (!hydrated && !user)) {
     return (
       <div className="workspace-shell workspace-pattern flex min-h-screen items-center justify-center">
         <div className="liquid-glass rounded-[1.75rem] px-8 py-6 text-sm text-white/80">
@@ -75,13 +74,13 @@ export function ProtectedAppShell({ children, hasSession }: ProtectedAppShellPro
     );
   }
 
-  if (!user && !hasSession) {
+  if (!user) {
     return null;
   }
 
   const displayName = user?.displayName ?? "Workspace User";
   const roleLabel = user?.accountType?.replaceAll("_", " ") ?? "demo session";
-  const showDemoBadge = user?.mode === "demo" || hasSession;
+  const showDemoBadge = user?.mode === "demo";
 
   return (
     <div className="workspace-shell workspace-pattern min-h-screen">
@@ -146,7 +145,7 @@ export function ProtectedAppShell({ children, hasSession }: ProtectedAppShellPro
                     className="w-full rounded-xl px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/10 hover:text-white"
                     onClick={() => {
                       logout();
-                      toast.success("Logged out of demo workspace");
+                      toast.success("Logged out successfully");
                       router.replace("/login");
                     }}
                     type="button"

@@ -2,99 +2,138 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
+import {
+  auth,
+  hasFirebaseConfig,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signOut as firebaseSignOut,
+} from "@/services/firebase";
+import { api, ApiError } from "@/services/api-client";
 import type { AccountType, WorkspaceUser } from "@/lib/workspace-types";
-
-type RegisterPayload = {
-  accountType: AccountType;
-  displayName: string;
-  email: string;
-  organizationName?: string;
-  teamCode?: string;
-  teamName?: string;
-};
 
 type AuthState = {
   hydrated: boolean;
-  markHydrated: () => void;
-  loginWithDemo: (payload: Pick<WorkspaceUser, "displayName" | "email">) => void;
-  logout: () => void;
-  registerWithDemo: (payload: RegisterPayload) => WorkspaceUser;
+  loading: boolean;
   user: WorkspaceUser | null;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
+  logout: () => Promise<void>;
+  checkSession: () => Promise<void>;
+  markHydrated: () => void;
 };
-
-function createDemoTeamCode() {
-  return `DEV-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-}
-
-function setDemoSessionCookie(enabled: boolean) {
-  if (typeof document === "undefined") {
-    return;
-  }
-
-  if (enabled) {
-    document.cookie = "devflow_demo_session=1; path=/; max-age=2592000; SameSite=Lax";
-    return;
-  }
-
-  document.cookie = "devflow_demo_session=; path=/; max-age=0; SameSite=Lax";
-}
-
-function buildDemoUser(payload: RegisterPayload): WorkspaceUser {
-  const teamCode =
-    payload.accountType === "team_member"
-      ? payload.teamCode
-      : payload.accountType === "solo_user"
-        ? undefined
-        : createDemoTeamCode();
-
-  return {
-    accountType: payload.accountType,
-    displayName: payload.displayName,
-    email: payload.email,
-    joinLink: teamCode ? `http://localhost:3000/join/${teamCode}` : undefined,
-    mode: "demo",
-    organizationName: payload.organizationName,
-    teamCode,
-    teamName: payload.teamName,
-  };
-}
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       hydrated: false,
-      loginWithDemo: ({ displayName, email }) => {
-        setDemoSessionCookie(true);
-        set({
-          user: {
-            accountType: "team_leader",
-            displayName,
-            email,
-            joinLink: "http://localhost:3000/join/DEV-DEMO",
-            mode: "demo",
-            teamCode: "DEV-DEMO",
-            teamName: "Demo Workspace",
-          },
-        });
+      loading: true,
+      user: null,
+
+      checkSession: async () => {
+        if (!hasFirebaseConfig) {
+          set({ loading: false });
+          return;
+        }
+        try {
+          const userData = await api.get<{
+            email: string;
+            displayName: string;
+            accountType: string;
+            teamCode?: string;
+            teamName?: string;
+            organizationName?: string;
+            joinLink?: string;
+            mode: string;
+          }>("/api/me");
+          set({
+            user: {
+              email: userData.email,
+              displayName: userData.displayName,
+              accountType: userData.accountType as AccountType,
+              teamCode: userData.teamCode,
+              teamName: userData.teamName,
+              organizationName: userData.organizationName,
+              joinLink: userData.joinLink,
+              mode: userData.mode as "demo" | "firebase",
+            },
+            loading: false,
+          });
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 401) {
+            set({ user: null, loading: false });
+          } else {
+            set({ loading: false });
+          }
+        }
       },
-      logout: () => {
-        setDemoSessionCookie(false);
+
+      loginWithDemo: (payload: Pick<WorkspaceUser, "displayName" | "email">) => {
+    set({
+      user: {
+        accountType: "team_leader",
+        displayName: payload.displayName,
+        email: payload.email,
+        joinLink: `${window.location.origin}/join/DEV-DEMO`,
+        mode: "demo",
+        teamCode: "DEV-DEMO",
+        teamName: "Demo Workspace",
+      },
+      loading: false,
+    });
+  },
+
+  loginWithEmail: async (email: string, password: string) => {
+        if (!hasFirebaseConfig || !auth) {
+          throw new Error("Firebase not configured");
+        }
+        await signInWithEmailAndPassword(auth, email, password);
+        await get().checkSession();
+      },
+
+      registerWithEmail: async (email: string, password: string) => {
+        if (!hasFirebaseConfig || !auth) {
+          throw new Error("Firebase not configured");
+        }
+        await createUserWithEmailAndPassword(auth, email, password);
+        await get().checkSession();
+      },
+
+      loginWithGoogle: async () => {
+        if (!hasFirebaseConfig || !auth) {
+          throw new Error("Firebase not configured");
+        }
+        await signInWithPopup(auth, new GoogleAuthProvider());
+        await get().checkSession();
+      },
+
+      loginWithGithub: async () => {
+        if (!hasFirebaseConfig || !auth) {
+          throw new Error("Firebase not configured");
+        }
+        await signInWithPopup(auth, new GithubAuthProvider());
+        await get().checkSession();
+      },
+
+      logout: async () => {
+        if (hasFirebaseConfig && auth) {
+          await firebaseSignOut(auth);
+        }
         set({ user: null });
       },
+
       markHydrated: () => set({ hydrated: true }),
-      registerWithDemo: (payload) => {
-        const user = buildDemoUser(payload);
-        setDemoSessionCookie(true);
-        set({ user });
-        return user;
-      },
-      user: null,
     }),
     {
       name: "devflow-auth",
       onRehydrateStorage: () => (state) => {
         state?.markHydrated();
+        state?.checkSession();
       },
       partialize: (state) => ({ user: state.user }),
     },

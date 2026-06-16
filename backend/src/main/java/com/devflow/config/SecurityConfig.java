@@ -7,11 +7,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final FirebaseAuthFilter firebaseAuthFilter;
+
+    public SecurityConfig(FirebaseAuthFilter firebaseAuthFilter) {
+        this.firebaseAuthFilter = firebaseAuthFilter;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -65,7 +72,8 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .invalidateHttpSession(true)
                 .permitAll()
-            );
+            )
+            .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

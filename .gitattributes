@@ -1,0 +1,20 @@
+# Force Java as the primary language on GitHub
+*.java linguist-language=Java linguist-detectable=true
+*.xml linguist-detectable=true
+
+# Mark frontend build artifacts as vendored (excluded from language stats)
+frontend/node_modules/** linguist-vendored=true
+frontend/.next/** linguist-vendored=true
+frontend/out/** linguist-vendored=true
+frontend/public/content/** linguist-vendored=true
+backend/src/main/resources/static/content/** linguist-vendored=true
+
+# Mark generated/auto files
+*.js linguist-generated=true
+*.ts linguist-generated=true
+*.tsx linguist-generated=true
+package.json linguist-generated=true
+package-lock.json linguist-generated=true
+*.svg linguist-vendored=true
+*.png linguist-vendored=true
+*.jpg linguist-vendored=true
