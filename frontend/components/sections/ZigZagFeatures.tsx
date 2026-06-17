@@ -24,7 +24,7 @@ export function ZigZagFeatures() {
                 <p className="mt-5 text-base leading-8 text-zinc-600 sm:text-lg">{row.description}</p>
                 <div className="mt-7">
                   <Button href="/signup" showArrow variant="primary">
-                    Sign Up
+                    Get Started
                   </Button>
                 </div>
               </div>

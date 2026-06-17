@@ -15,7 +15,7 @@ export function RouteHero({
   description,
   eyebrow,
   primaryHref = "/signup",
-  primaryLabel = "Sign Up",
+  primaryLabel = "Get Started",
   secondaryHref,
   secondaryLabel,
   title,

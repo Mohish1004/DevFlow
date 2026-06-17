@@ -22,7 +22,7 @@ const copy = {
   },
   signup: {
     button: "Request Access",
-    eyebrow: "Sign Up",
+    eyebrow: "Get Started",
     headline: "Bring your team into one workflow.",
     intro:
       "Start with product planning, review workflows, documentation, and release visibility in one place.",

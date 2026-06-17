@@ -184,7 +184,7 @@ export function LoginForm() {
           </button>
         ) : null}
         <Link className="hover:text-white" href="/signup">
-          New here? Sign up
+          New here? Create or join a workspace
         </Link>
       </div>
     </div>

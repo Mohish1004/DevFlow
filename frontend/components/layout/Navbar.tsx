@@ -59,7 +59,7 @@ export function Navbar() {
           </nav>
           <div className="hidden md:block">
             <Button href="/signup" showArrow size="sm" variant="primary">
-              Sign Up
+              Get Started
             </Button>
           </div>
           <button
@@ -96,7 +96,7 @@ export function Navbar() {
               </Link>
             ))}
             <Button className="mt-2 w-full" href="/signup" showArrow variant="primary">
-              Sign Up
+              Get Started
             </Button>
           </div>
         </motion.div>

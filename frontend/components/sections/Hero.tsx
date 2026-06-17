@@ -38,7 +38,7 @@ export function Hero() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button href="/signup" showArrow variant="primary">
-                Sign Up
+                Get Started
               </Button>
               <Button href="/login" variant="secondary">
                 Sign In
