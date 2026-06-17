@@ -40,7 +40,10 @@ export function Hero() {
               <Button href="/signup" showArrow variant="primary">
                 Sign Up
               </Button>
-              <Button href="/product" variant="secondary">
+              <Button href="/login" variant="secondary">
+                Sign In
+              </Button>
+              <Button href="/product" variant="ghost">
                 Learn More
               </Button>
             </div>

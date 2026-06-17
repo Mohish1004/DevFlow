@@ -288,12 +288,12 @@ export function DashboardPreview() {
                       </div>
                     ))}
                   </div>
-                  <button
+                  <a
                     className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-full bg-zinc-950 text-sm font-semibold text-white transition hover:brightness-110"
-                    type="button"
+                    href="/login"
                   >
                     Open Review Zone
-                  </button>
+                  </a>
                 </div>
                 <div className="rounded-[1.75rem] border border-white/6 bg-[#101017] p-5">
                   <div className="flex items-center justify-between">
