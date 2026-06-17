@@ -1,0 +1,27 @@
+[project]
+name = "devflow"
+ref = "qoywkcibgklnaikpmcnh"
+plan = "free"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+
+[db]
+major_version = 15
+
+[db.pooler]
+enabled = false
+
+[auth]
+enabled = false
+
+[storage]
+enabled = false
+
+[edge_functions]
+enabled = false
+
+[analytics]
+enabled = false
