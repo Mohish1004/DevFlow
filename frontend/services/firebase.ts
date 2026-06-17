@@ -35,11 +35,19 @@ const hasFirebaseConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== "un
 if (hasFirebaseConfig) {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
   auth = getAuth(app);
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
-    }
-  });
+  isSupported()
+    .then((supported) => {
+      if (supported) {
+        try {
+          analytics = getAnalytics(app);
+        } catch {
+          // analytics not available in this environment
+        }
+      }
+    })
+    .catch(() => {
+      // analytics support check failed
+    });
 }
 
 export async function getFirebaseToken(): Promise<string | null> {
