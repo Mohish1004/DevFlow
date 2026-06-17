@@ -1,0 +1,22 @@
+{
+  "name": "@devflow/ai-gateway",
+  "version": "1.0.0",
+  "description": "Vercel AI Gateway text generation demo",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.72",
+    "@types/node": "^25.9.3",
+    "ai": "^6.0.207",
+    "dotenv": "^17.4.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
