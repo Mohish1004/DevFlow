@@ -1,26 +1,14 @@
-import { MarketingPageFrame } from "@/components/layout/MarketingPageFrame";
-import { RouteHero } from "@/components/sections/RouteHero";
-import { SignupForm } from "@/components/sections/SignupForm";
+import { PublicAuthFrame } from "@/components/auth/PublicAuthFrame";
+import { SignUpForm } from "@/components/auth/SignUpForm";
 
-export default function SignupPage() {
+export default function SignUpPage() {
   return (
-    <MarketingPageFrame
-      hero={
-        <RouteHero
-          description="Tell us about your team and workflow. We will use that to shape the right DevFlow setup and rollout path."
-          eyebrow="GET STARTED"
-          primaryHref="#signup-form"
-          primaryLabel="Request Access"
-          title="Start building with DevFlow."
-        />
-      }
-      showFinalCta={false}
+    <PublicAuthFrame
+      description="Create your account with email or a social login to get started."
+      eyebrow="GET STARTED"
+      title="Create a DevFlow workspace."
     >
-      <section className="bg-white py-20 md:py-28" id="signup-form">
-        <div className="section-shell">
-          <SignupForm />
-        </div>
-      </section>
-    </MarketingPageFrame>
+      <SignUpForm />
+    </PublicAuthFrame>
   );
 }

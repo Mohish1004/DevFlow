@@ -11,6 +11,7 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signOut as firebaseSignOut,
+  updateProfile,
 } from "@/services/firebase";
 import { api, ApiError } from "@/services/api-client";
 import type { AccountType, WorkspaceUser } from "@/lib/workspace-types";
@@ -31,7 +32,7 @@ type AuthState = {
   loginWithDemo: (payload: Pick<WorkspaceUser, "displayName" | "email">) => void;
   registerWithDemo: (payload: RegisterDemoPayload) => WorkspaceUser;
   loginWithEmail: (email: string, password: string) => Promise<void>;
-  registerWithEmail: (email: string, password: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string, displayName?: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   loginWithGithub: () => Promise<void>;
   logout: () => Promise<void>;
@@ -127,11 +128,14 @@ export const useAuthStore = create<AuthState>()(
         await get().checkSession();
       },
 
-      registerWithEmail: async (email: string, password: string) => {
+      registerWithEmail: async (email: string, password: string, displayName?: string) => {
         if (!hasFirebaseConfig || !auth) {
           throw new Error("Firebase not configured");
         }
-        await createUserWithEmailAndPassword(auth, email, password);
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        if (displayName && cred.user) {
+          await updateProfile(cred.user, { displayName });
+        }
         await get().checkSession();
       },
 

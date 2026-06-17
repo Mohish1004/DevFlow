@@ -10,6 +10,8 @@ import {
   signOut,
   onAuthStateChanged,
   getIdToken,
+  sendPasswordResetEmail,
+  updateProfile,
   User,
   Auth,
 } from "firebase/auth";
@@ -61,6 +63,9 @@ export {
   GithubAuthProvider,
   signOut,
   onAuthStateChanged,
+  getIdToken,
+  sendPasswordResetEmail,
+  updateProfile,
 };
 
 export type { User };

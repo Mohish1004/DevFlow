@@ -46,18 +46,16 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
             try {
                 FirebaseToken decoded = FirebaseAuth.getInstance().verifyIdToken(token);
                 String email = decoded.getEmail();
-                String name = decoded.getName();
-                if (name == null || name.isBlank()) {
-                    name = email;
-                }
                 if (email == null) {
                     chain.doFilter(request, response);
                     return;
                 }
+                String rawName = decoded.getName();
+                String displayName = (rawName != null && !rawName.isBlank()) ? rawName : email;
                 User user = userRepository.findByEmail(email).orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
-                            .displayName(name)
+                            .displayName(displayName)
                             .accountType(AccountType.SOLO_USER)
                             .mode("firebase")
                             .build();

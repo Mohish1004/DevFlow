@@ -6,10 +6,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useState } from "react";
 
-import { authMode, firebaseConfigured, getAuthSetupMessage } from "@/lib/runtime-config";
+import { authMode, firebaseConfigured } from "@/lib/runtime-config";
 import { useAuthStore } from "@/stores/auth-store";
+import { auth, sendPasswordResetEmail } from "@/services/firebase";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -20,8 +20,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const { loginWithEmail, registerWithEmail, loginWithGoogle, loginWithGithub } = useAuthStore();
+  const { loginWithEmail, loginWithGoogle, loginWithGithub } = useAuthStore();
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -46,13 +45,8 @@ export function LoginForm() {
     }
 
     try {
-      if (mode === "login") {
-        await loginWithEmail(values.email, values.password);
-        toast.success("Signed in successfully");
-      } else {
-        await registerWithEmail(values.email, values.password);
-        toast.success("Account created successfully");
-      }
+      await loginWithEmail(values.email, values.password);
+      toast.success("Signed in successfully");
       router.push("/app/dashboard");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
@@ -88,18 +82,26 @@ export function LoginForm() {
     }
   };
 
-  const heading = mode === "login" ? "Re-enter the workspace." : "Create your workspace.";
-  const submitLabel = mode === "login" ? "Sign In" : "Create Account";
+  const handleForgotPassword = async () => {
+    const email = (document.getElementById("email") as HTMLInputElement)?.value;
+    if (!email || !z.string().email().safeParse(email).success) {
+      toast.error("Enter a valid email address first.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth!, email);
+      toast.success("Password reset email sent.");
+    } catch {
+      toast.error("Failed to send reset email.");
+    }
+  };
 
   return (
     <div className="liquid-glass rounded-[2rem] p-8">
-      <p className="text-sm font-semibold uppercase tracking-[0.26em] text-white/60">
-        {mode === "login" ? "Login" : "Sign Up"}
-      </p>
+      <p className="text-sm font-semibold uppercase tracking-[0.26em] text-white/60">Login</p>
       <h2 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-white">
-        {heading}
+        Re-enter the workspace.
       </h2>
-      <p className="mt-4 text-sm leading-7 text-white/70">{getAuthSetupMessage()}</p>
 
       {firebaseConfigured ? (
         <div className="mt-6 grid gap-3">
@@ -131,9 +133,7 @@ export function LoginForm() {
               <div className="w-full border-t border-white/10" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-[#101017] px-3 text-white/40">
-                {mode === "login" ? "or sign in with email" : "or register with email"}
-              </span>
+              <span className="bg-[#101017] px-3 text-white/40">or sign in with email</span>
             </div>
           </div>
         </div>
@@ -144,6 +144,7 @@ export function LoginForm() {
           <span className="text-sm text-white/80">Email</span>
           <input
             className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-white/35"
+            id="email"
             placeholder="you@team.dev"
             {...register("email")}
           />
@@ -169,28 +170,22 @@ export function LoginForm() {
           disabled={isSubmitting}
           type="submit"
         >
-          {authMode === "demo" ? "Enter Demo Workspace" : submitLabel}
+          {authMode === "demo" ? "Enter Demo Workspace" : "Sign In"}
         </button>
       </form>
-      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-white/72">
+      <div className="mt-5 flex flex-col gap-2 text-sm text-white/72">
         {firebaseConfigured ? (
           <button
-            className="text-white/72 hover:text-white"
-            onClick={() => setMode(mode === "login" ? "register" : "login")}
+            className="self-start text-white/72 hover:text-white"
+            onClick={handleForgotPassword}
             type="button"
           >
-            {mode === "login" ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            Forgot password?
           </button>
-        ) : (
-          <Link className="hover:text-white" href="/signup">
-            Create account
-          </Link>
-        )}
-        {authMode === "demo" ? (
-          <Link className="hover:text-white" href="/join/DEV-DEMO">
-            Join with team code
-          </Link>
         ) : null}
+        <Link className="hover:text-white" href="/signup">
+          New here? Sign up
+        </Link>
       </div>
     </div>
   );
